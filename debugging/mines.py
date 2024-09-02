@@ -13,6 +13,7 @@ class Minesweeper:
         self.field = [[' ' for _ in range(width)] for _ in range(height)]
         self.revealed = [[False for _ in range(width)] for _ in range(height)]
         self.flags = [[False for _ in range(width)] for _ in range(height)]
+        self.cells_to_reveal = width * height - mines
 
     def print_board(self, reveal=False):
         clear_screen()
@@ -47,7 +48,11 @@ class Minesweeper:
             return True  # Prevent revealing flagged cells
         if (y * self.width + x) in self.mines:
             return False
+        if self.revealed[y][x]:
+            return True  # Already revealed
         self.revealed[y][x] = True
+        self.cells_to_reveal -= 1
+
         if self.count_mines_nearby(x, y) == 0:
             for dx in [-1, 0, 1]:
                 for dy in [-1, 0, 1]:
@@ -63,6 +68,9 @@ class Minesweeper:
     def play(self):
         while True:
             self.print_board()
+            if self.cells_to_reveal == 0:
+                print("Congratulations! You've won the game!")
+                break
             try:
                 action = input("Enter 'r' to reveal, 'f' to flag/unflag: ").strip().lower()
                 x = int(input("Enter x coordinate: "))
